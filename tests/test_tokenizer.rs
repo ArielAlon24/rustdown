@@ -1,5 +1,5 @@
-use rustdown::tokenizer::Token;
-use rustdown::tokenizer::Tokenizer;
+use rustdown::Token;
+use rustdown::Tokenizer;
 
 #[test]
 fn test_text() {

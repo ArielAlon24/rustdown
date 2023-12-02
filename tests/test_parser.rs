@@ -1,6 +1,6 @@
-use rustdown::parser::Parser;
-use rustdown::tag::Tag;
-use rustdown::tokenizer::Token;
+use rustdown::Parser;
+use rustdown::Tag;
+use rustdown::Token;
 
 #[test]
 fn test_text() {

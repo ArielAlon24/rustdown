@@ -1,13 +1,7 @@
-mod parser;
-mod tag;
-mod tokenizer;
-
-use parser::Parser;
+use rustdown::{convert, parse, tokenize};
 use std::env;
-
 use std::fs;
 use std::process;
-use tokenizer::Tokenizer;
 
 #[derive(PartialEq)]
 pub enum Mode {
@@ -27,6 +21,14 @@ impl<'a> From<&'a str> for Mode {
                 process::exit(1);
             }
         }
+    }
+}
+
+pub fn run(mode: Mode, content: &str) -> String {
+    match mode {
+        Mode::Tokenizer => format!("{:?}", tokenize(content)),
+        Mode::Parser => format!("{:#?}", parse(content)),
+        Mode::Converter => format!("{}", convert(content)),
     }
 }
 
@@ -64,15 +66,5 @@ fn main() {
         }
     };
 
-    let tokenizer = Tokenizer::from(content.as_str());
-
-    if mode == Mode::Tokenizer {
-        for token in tokenizer {
-            println!("Token: {:?}", token);
-        }
-    } else {
-        let mut parser = Parser::from(tokenizer);
-        let tags = parser.parse();
-        println!("Tags: \n{:#?}", tags);
-    }
+    println!("{}", run(mode, &content));
 }

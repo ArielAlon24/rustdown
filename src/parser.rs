@@ -1,5 +1,5 @@
 use crate::tag::Tag;
-use crate::tokenizer::Token;
+use crate::token::Token;
 use crate::tokenizer::Tokenizer;
 use std::iter::Peekable;
 use std::mem;

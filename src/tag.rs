@@ -1,4 +1,4 @@
-use crate::tokenizer::Token;
+use crate::Token;
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Tag {
