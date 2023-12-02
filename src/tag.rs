@@ -1,6 +1,6 @@
 use crate::tokenizer::Token;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub enum Tag {
     Newline,
     Text(String),
@@ -24,5 +24,9 @@ impl Tag {
             Token::Both => Tag::Bold(vec![Tag::Italic(inner)]),
             _ => panic!("Unknown Style Token!"),
         }
+    }
+
+    pub fn text(content: &str) -> Self {
+        Self::Text(content.into())
     }
 }

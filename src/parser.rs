@@ -1,17 +1,27 @@
 use crate::tag::Tag;
 use crate::tokenizer::Token;
-use crate::Tokenizer;
+use crate::tokenizer::Tokenizer;
 use std::iter::Peekable;
 use std::mem;
 
 pub struct Parser<'a> {
-    tokenizer: Peekable<Tokenizer<'a>>,
+    tokenizer: Peekable<Box<dyn Iterator<Item = Token> + 'a>>,
 }
 
 impl<'a> From<Tokenizer<'a>> for Parser<'a> {
-    fn from(value: Tokenizer<'a>) -> Self {
+    fn from(tokenizer: Tokenizer<'a>) -> Self {
         Parser {
-            tokenizer: value.peekable(),
+            tokenizer: (Box::new(tokenizer.into_iter()) as Box<dyn Iterator<Item = Token> + 'a>)
+                .peekable(),
+        }
+    }
+}
+
+impl<'a> From<Vec<Token>> for Parser<'a> {
+    fn from(tokens: Vec<Token>) -> Self {
+        Parser {
+            tokenizer: (Box::new(tokens.into_iter()) as Box<dyn Iterator<Item = Token> + 'a>)
+                .peekable(),
         }
     }
 }
