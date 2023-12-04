@@ -4,7 +4,9 @@ use rustdown::Token;
 
 #[test]
 fn test_text() {
-    let tags = Parser::from(vec![Token::text("Hello, world!")]).parse();
+    let tags: Vec<_> = Parser::from(vec![Token::text("Hello, world!")])
+        .into_iter()
+        .collect();
     let expected = vec![Tag::Paragraph(vec![Tag::text("Hello, world!")])];
 
     assert_eq!(tags, expected);
@@ -12,7 +14,7 @@ fn test_text() {
 
 #[test]
 fn test_italic_bold_both() {
-    let tags = Parser::from(vec![
+    let tags: Vec<_> = Parser::from(vec![
         Token::Italic,
         Token::text("italic"),
         Token::Italic,
@@ -25,7 +27,8 @@ fn test_italic_bold_both() {
         Token::text("both"),
         Token::Both,
     ])
-    .parse();
+    .into_iter()
+    .collect();
 
     let expected = vec![Tag::Paragraph(vec![
         Tag::Italic(vec![Tag::text("italic")]),
@@ -40,7 +43,7 @@ fn test_italic_bold_both() {
 
 #[test]
 fn test_newlines() {
-    let tags = Parser::from(vec![
+    let tags: Vec<_> = Parser::from(vec![
         Token::text("Line one "),
         Token::Newline,
         Token::Newline,
@@ -51,7 +54,8 @@ fn test_newlines() {
         Token::Newline,
         Token::Newline,
     ])
-    .parse();
+    .into_iter()
+    .collect();
 
     let expected = vec![
         Tag::Paragraph(vec![Tag::text("Line one ")]),
@@ -66,7 +70,7 @@ fn test_newlines() {
 
 #[test]
 fn test_header() {
-    let tags = Parser::from(vec![
+    let tags: Vec<_> = Parser::from(vec![
         Token::Header(1),
         Token::text("This is an header!"),
         Token::Newline,
@@ -76,7 +80,8 @@ fn test_header() {
         Token::Bold,
         Token::text("."),
     ])
-    .parse();
+    .into_iter()
+    .collect();
 
     let expected = vec![
         Tag::Header(1, vec![Tag::text("This is an header!")]),

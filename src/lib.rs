@@ -18,5 +18,5 @@ pub fn parse(content: &str) -> Vec<Tag> {
 }
 
 pub fn convert<'a>(content: &'a str) -> String {
-    converter::convert(Parser::from(Tokenizer::from(content)).into_iter())
+    converter::from(Parser::from(Tokenizer::from(content)).into_iter())
 }
