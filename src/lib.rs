@@ -1,3 +1,4 @@
+pub mod converter;
 pub mod parser;
 pub mod tag;
 pub mod token;
@@ -13,9 +14,9 @@ pub fn tokenize(content: &str) -> Vec<Token> {
 }
 
 pub fn parse(content: &str) -> Vec<Tag> {
-    Parser::from(Tokenizer::from(content)).parse()
+    Parser::from(Tokenizer::from(content)).into_iter().collect()
 }
 
-pub fn convert(content: &str) -> String {
-    todo!("{}", content)
+pub fn convert<'a>(content: &'a str) -> String {
+    converter::convert(Parser::from(Tokenizer::from(content)).into_iter())
 }

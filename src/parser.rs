@@ -26,21 +26,22 @@ impl<'a> From<Vec<Token>> for Parser<'a> {
     }
 }
 
-impl Parser<'_> {
-    pub fn parse(&mut self) -> Vec<Tag> {
-        let mut tags = Vec::new();
+impl<'a> Iterator for Parser<'a> {
+    type Item = Tag;
 
-        while let Some(token) = self.tokenizer.peek() {
-            let tag = match token {
-                Token::Header(_) => self.parse_header(),
-                Token::Newline => self.parse_newline(),
-                _ => Tag::Paragraph(self.parse_line()),
+    fn next(&mut self) -> Option<Self::Item> {
+        if let Some(token) = self.tokenizer.peek() {
+            return match token {
+                Token::Header(_) => Some(self.parse_header()),
+                Token::Newline => Some(self.parse_newline()),
+                _ => Some(Tag::Paragraph(self.parse_line())),
             };
-            tags.push(tag)
         }
-        tags
+        None
     }
+}
 
+impl Parser<'_> {
     fn parse_newline(&mut self) -> Tag {
         self.tokenizer.next();
         Tag::Newline
