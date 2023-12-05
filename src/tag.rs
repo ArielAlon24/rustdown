@@ -10,8 +10,9 @@ pub enum Tag {
     Italic(Vec<Tag>),
     Paragraph(Vec<Tag>),
     Header(usize, Vec<Tag>),
-    // OrederedList(Vec<Tag>),
-    // UnorederedList(Vec<Tag>),
+    ListItem(Vec<Tag>),
+    OrederedList(Vec<Tag>),
+    UnorderedList(Vec<Tag>),
     // Link(String),
     // InlineCode(String),
     // Code(String),
@@ -49,6 +50,9 @@ impl fmt::Display for Tag {
             Tag::Italic(tags) => write!(f, "<i>{}</i>", format_tags(tags)),
             Tag::Paragraph(tags) => write!(f, "<p>{}</p>", format_tags(tags)),
             Tag::Header(size, tags) => write!(f, "<h{size}>{}</h{size}>", format_tags(tags)),
+            Tag::ListItem(tags) => write!(f, "<li>{}</li>", format_tags(tags)),
+            Tag::UnorderedList(tags) => write!(f, "<ul>{}</ul>", format_tags(tags)),
+            Tag::OrederedList(tags) => write!(f, "<ol>{}</ol>", format_tags(tags)),
         }
     }
 }

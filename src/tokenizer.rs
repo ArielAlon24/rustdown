@@ -48,6 +48,14 @@ impl Tokenizer<'_> {
         }
         Token::Italic
     }
+
+    fn handle_dash(&mut self) -> Token {
+        if let Some(' ') = self.chars.peek() {
+            self.chars.next();
+            return Token::Dash;
+        }
+        Token::Text(self.consume_text('-'))
+    }
 }
 
 impl<'a> From<&'a str> for Tokenizer<'a> {
@@ -64,7 +72,9 @@ impl<'a> Iterator for Tokenizer<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         match self.chars.next()? {
             '\n' => Some(Token::Newline),
+            '\t' => Some(Token::Tab),
             '#' => Some(self.consume_header()),
+            '-' => Some(self.handle_dash()),
             c if Token::STYLE_CHARS.contains(&c) => Some(self.next_style(c)),
             c => Some(Token::Text(self.consume_text(c))),
         }

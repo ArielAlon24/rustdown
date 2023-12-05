@@ -2,7 +2,7 @@ use crate::tag::Tag;
 use crate::token::Token;
 use crate::tokenizer::Tokenizer;
 use std::iter::Peekable;
-use std::mem;
+use std::{mem, unreachable};
 
 pub struct Parser<'a> {
     tokenizer: Peekable<Box<dyn Iterator<Item = Token> + 'a>>,
@@ -34,6 +34,7 @@ impl<'a> Iterator for Parser<'a> {
             return match token {
                 Token::Header(_) => Some(self.parse_header()),
                 Token::Newline => Some(self.parse_newline()),
+                Token::Dash => Some(self.parse_ul()),
                 _ => Some(Tag::Paragraph(self.parse_line())),
             };
         }
@@ -68,7 +69,7 @@ impl Parser<'_> {
                         current.push(Tag::Text(value));
                     }
                 }
-                style if [Token::Bold, Token::Italic, Token::Both].contains(&style) => {
+                style if Token::STYLES.contains(&style) => {
                     if style_stack
                         .last()
                         .is_some_and(|last: &Token| last == &style)
@@ -89,5 +90,54 @@ impl Parser<'_> {
         }
 
         inner
+    }
+
+    fn parse_li(&mut self, initiataor: Token) -> (Tag, usize) {
+        let mut level = 0;
+        while self
+            .tokenizer
+            .peek()
+            .is_some_and(|token| token == &initiataor)
+        {
+            self.tokenizer.next();
+            level += 1;
+        }
+        (Tag::ListItem(self.parse_line()), level)
+    }
+
+    fn parse_ul(&mut self) -> Tag {
+        let mut ul = Tag::UnorderedList(vec![]);
+        let mut current = 1;
+        let mut last_ul: &mut Tag = &mut ul;
+
+        while let Some(Token::Dash) = self.tokenizer.peek() {
+            let (li, level) = self.parse_li(Token::Dash);
+
+            if level > current {
+                for _ in 0..level - current {
+                    let Tag::UnorderedList(tags) = last_ul else {
+                        unreachable!()
+                    };
+                    tags.push(Tag::UnorderedList(vec![]));
+                    last_ul = tags.last_mut().unwrap();
+                }
+            } else if current > level {
+                last_ul = &mut ul;
+                for _ in 0..level - 1 {
+                    let Tag::UnorderedList(tags) = last_ul else {
+                        unreachable!()
+                    };
+                    last_ul = tags.last_mut().unwrap();
+                }
+            }
+
+            current = level;
+            let Tag::UnorderedList(tags) = last_ul else {
+                unreachable!()
+            };
+            tags.push(li);
+        }
+
+        ul
     }
 }
