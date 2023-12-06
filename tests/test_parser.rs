@@ -4,17 +4,17 @@ use rustdown::Token;
 
 #[test]
 fn test_text() {
-    let tags: Vec<_> = Parser::from(vec![Token::text("Hello, world!")])
+    let actual: Vec<_> = Parser::from(vec![Token::text("Hello, world!")])
         .into_iter()
         .collect();
     let expected = vec![Tag::Paragraph(vec![Tag::text("Hello, world!")])];
 
-    assert_eq!(tags, expected);
+    assert_eq!(actual, expected);
 }
 
 #[test]
 fn test_italic_bold_both() {
-    let tags: Vec<_> = Parser::from(vec![
+    let actual: Vec<_> = Parser::from(vec![
         Token::Italic,
         Token::text("italic"),
         Token::Italic,
@@ -38,12 +38,12 @@ fn test_italic_bold_both() {
         Tag::Bold(vec![Tag::Italic(vec![Tag::text("both")])]),
     ])];
 
-    assert_eq!(tags, expected);
+    assert_eq!(actual, expected);
 }
 
 #[test]
 fn test_newlines() {
-    let tags: Vec<_> = Parser::from(vec![
+    let actual: Vec<_> = Parser::from(vec![
         Token::text("Line one "),
         Token::Newline,
         Token::Newline,
@@ -65,12 +65,12 @@ fn test_newlines() {
         Tag::Newline,
     ];
 
-    assert_eq!(tags, expected);
+    assert_eq!(actual, expected);
 }
 
 #[test]
 fn test_header() {
-    let tags: Vec<_> = Parser::from(vec![
+    let actual: Vec<_> = Parser::from(vec![
         Token::Header(1),
         Token::text("This is an header!"),
         Token::Newline,
@@ -92,5 +92,32 @@ fn test_header() {
         ]),
     ];
 
-    assert_eq!(tags, expected);
+    assert_eq!(actual, expected);
+}
+
+#[test]
+fn test_unordered_list() {
+    let actual: Vec<_> = Parser::from(vec![
+        Token::Header(1),
+        Token::text("Unordered List"),
+        Token::Newline,
+        Token::Dash,
+        Token::text("Entry 1."),
+        Token::Newline,
+        Token::Dash,
+        Token::Dash,
+        Token::text("Sub Entry 1."),
+    ])
+    .into_iter()
+    .collect();
+
+    let expected = vec![
+        Tag::Header(1, vec![Tag::text("Unordered List")]),
+        Tag::UnorderedList(vec![
+            Tag::ListItem(vec![Tag::text("Entry 1.")]),
+            Tag::UnorderedList(vec![Tag::ListItem(vec![Tag::text("Sub Entry 1.")])]),
+        ]),
+    ];
+
+    assert_eq!(actual, expected);
 }

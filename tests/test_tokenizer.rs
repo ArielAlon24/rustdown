@@ -66,3 +66,22 @@ fn test_headers() {
     ];
     assert_eq!(actual, expected);
 }
+
+#[test]
+fn test_unordered_list() {
+    let actual: Vec<_> = Tokenizer::from("# Unordered List\n- Entry 1.\n- - Sub Entry 1.")
+        .into_iter()
+        .collect();
+    let expected = vec![
+        Token::Header(1),
+        Token::text("Unordered List"),
+        Token::Newline,
+        Token::Dash,
+        Token::text("Entry 1."),
+        Token::Newline,
+        Token::Dash,
+        Token::Dash,
+        Token::text("Sub Entry 1."),
+    ];
+    assert_eq!(actual, expected)
+}
